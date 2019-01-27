@@ -1,0 +1,59 @@
+version: "2"
+services:
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+    - 27017:27017
+    network_mode: host
+    volumes:
+    - $HOME/mongo/db:/data/db
+
+  apigateway:
+    image: zull-service
+    build: zuul-gatewayservice/
+    restart: always
+    network_mode: host
+    depends_on:
+    - eurekaserver
+    ports:
+    - 8092:8092
+    expose:
+    - 8092
+
+
+  event-service:
+    image:  event-service
+    build:  eventbrite-service/
+    restart:  always
+    network_mode:  host
+    depends_on:
+    - mongo
+    ports:
+    - 8082:8082
+    expose:
+    - 8082
+
+  eurekaserver:
+    image: eureka-servcie:latest
+    build: eureka-server/
+    restart: always
+    network_mode: host
+    ports:
+    - 9091:9091
+    expose:
+    - 9091
+
+  configserver:
+      image: config-servcie:latest
+      build: config-server/
+      restart: always
+      network_mode: host
+      ports:
+      - 8888:8888
+      expose:
+      - 8888
+
+
+
+
